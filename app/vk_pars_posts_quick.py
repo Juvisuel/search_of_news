@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import requests
 import time
 import pandas as pd
-from f import f_time, f_text_encode
+from news_search_f import f_time, f_text_encode, f_geo
 
 pd.set_option('display.max_colwidth', 100)
 
@@ -271,76 +271,7 @@ def inner_cycle(rec_json_full, post_table, i, input_dict, list_no_words, back_dr
                                 ## проверка на длину текста
                                 if len(text.split()) < max_len_text:
                                     # print('len ok')
-                                    ## геопозиция важна
-                                    if geo == 'on':
-                                        try:
-                                            rec_json['geo']
 
-                                            post_number = rec_json['id']
-                                            ## проверка преобладающего времени в глаголах
-                                            if time_bounded[0] == 'on':
-                                                list_times = time_check(text)
-                                                if time_bounded[1] == 'past':
-
-                                                    if list_times[0] > list_times[1] and list_times[0] > list_times[2]:
-                                                        # print('ok time')
-                                                        post_number = rec_json['id']
-
-                                                        link = f'https://vk.com/wall{id_us}_{post_number}'
-                                                        print('to table 1 ')
-                                                        ## запись в таблицу, нам подошло
-                                                        post_table.loc[post_table.shape[0]] = [id_us, date, timestamp,
-                                                                                               attachments,
-                                                                                               likes,
-                                                                                               shares,
-                                                                                               comments,
-                                                                                               views, text[:2000], link,
-                                                                                               geo,
-                                                                                               question]
-
-
-                                                        # print('itsok' )
-
-                                                    else:
-                                                        pass
-                                                        # print('no ok time')
-
-
-
-                                            else:
-                                                # print('not time bounded')
-                                                if geo == 'on':
-
-                                                    try:
-                                                        rec_json['geo']
-
-                                                        post_number = rec_json['id']
-
-
-                                                        link = f'https://vk.com/wall{id_us}_{post_number}'
-                                                        print('to table 1 ')
-
-                                                        post_table.loc[post_table.shape[0]] = [id_us, date, timestamp,
-                                                                                               attachments,
-                                                                                               likes,
-                                                                                               shares,
-                                                                                               comments,
-                                                                                               views, text[:2000], link,
-                                                                                               geo,
-                                                                                               question]
-
-
-                                                        # print('itsok' )
-
-                                                    except:
-                                                            # print('no geo')
-                                                        pass
-
-                                        except:
-                                            # print('no geo')
-                                            pass
-
-                                    else:
                                         if time_bounded[0] == 'on':
                                             list_times = time_check(text)
                                             # print(text[:200])
@@ -527,7 +458,7 @@ def get_news_feed_last_day(input_dict, list_questions):
     post_table = pd.DataFrame(columns=['public', 'date', 'timestamp', 'attachments', 'likes', 'shares',
                                        'comments', 'views', 'text', 'link', 'geo', 'request'])
 
-
+    print(question_hard_list)
     ## для каждого ключевика
     for i, [question1, geo] in enumerate(list_questions):
         print(13131, question1, question_hard_list[i])
@@ -546,7 +477,7 @@ def get_news_feed_last_day(input_dict, list_questions):
                 question_hard_list_temp.insert(0, question1)
         else:
             question_form_list = [question1]
-            question_hard_list_temp = question_hard_list[i]
+            question_hard_list_temp = [question_hard_list[i]]
 
         for y, question in enumerate(question_form_list):
             try:
